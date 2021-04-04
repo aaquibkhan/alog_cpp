@@ -1,0 +1,129 @@
+//Given the head of a singly linked list, return true if it is a palindrome.
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+
+//Method#1 Using stack
+/*class Solution {
+public:
+    bool isPalindrome(ListNode* head) {
+       stack <int> s;
+       ListNode *temp = head;
+       
+       while(temp != NULL)
+       {
+           s.push(temp->val);
+           temp=temp->next;
+           
+       }
+        
+        temp= head;
+        while(temp != NULL)
+        {
+            if(temp->val == s.top())
+            {
+                
+                s.pop();
+                temp = temp->next;
+            }
+            else 
+                return 0;
+        }
+         
+        return 1;
+        
+    }
+};*/
+
+//Method#2 Reversing the linked list
+
+class Solution{
+public:
+    bool isPalindrome(ListNode* head){
+        ListNode* fast_ptr=head, *slow_ptr=head, *second_half, *mid_ptr = NULL, *prev_slow_ptr = head;
+        bool res;
+        
+        if(head !=NULL && head->next != NULL)
+        {
+           while(fast_ptr != NULL && fast_ptr->next != NULL)
+            {
+             fast_ptr = fast_ptr->next->next;
+             prev_slow_ptr = slow_ptr;
+             slow_ptr = slow_ptr->next;
+            } 
+            
+            if(fast_ptr != NULL)
+            {
+                mid_ptr = slow_ptr;
+                slow_ptr = slow_ptr->next;
+            }
+            
+            second_half = slow_ptr;
+            prev_slow_ptr->next = NULL;
+            reverse_list(&second_half);
+            res = compare_list(second_half, head);
+            
+            reverse_list(&second_half);
+            
+            if(mid_ptr != NULL)
+            {
+                prev_slow_ptr->next = mid_ptr;
+                mid_ptr->next = second_half;
+            }
+            else
+                prev_slow_ptr->next = second_half;
+            
+          }
+         return res;
+    }
+        
+        
+        bool compare_list(ListNode* second_half, ListNode* first_half)
+        {
+            while (first_half && second_half)
+            {
+                if(first_half->val == second_half->val)
+                {
+                    first_half = first_half->next;
+                    second_half = second_half->next;
+                }
+                else 
+                {
+                    return 0;
+                }
+            }
+            
+            if(first_half == NULL && second_half == NULL)
+                return 1;
+            
+            return 0;
+        }
+        
+ 
+    void reverse_list(ListNode** head_ref){
+        ListNode* current= *head_ref;
+        ListNode* next;
+        ListNode* prev=NULL;
+        
+        while(current!=NULL)
+        {
+            next = current->next;
+            //cout<<current->val<<endl;
+            current->next = prev;
+            prev = current;
+            current = next;            
+        }
+        //cout<<prev->val<<endl;
+        *head_ref = prev;
+       // cout<<*(head_ref)->val<<endl;
+    }
+};
+
